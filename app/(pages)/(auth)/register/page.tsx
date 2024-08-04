@@ -27,6 +27,8 @@ import { useEffect, useState } from "react";
 import { getAllProvinces } from "@/app/api/services/province.Service";
 import { Register } from "@/app/api/services/auth.Service";
 import { getAllDistrictsByProvince } from "@/app/api/services/district.Service";
+import axios from "axios";
+import { toast } from "sonner";
 
 const RegisterPage = () => {
   const [successMessage, setSuccessMessage] = useState("");
@@ -58,14 +60,31 @@ const RegisterPage = () => {
   const onSubmit = async (values: z.infer<typeof RegisterSchema>) => {
     console.log(values);
 
-    const res = await Register(values);
-    if (res.status == 201) {
-      console.log(res);
-      router.push("/")
-
-    } else {
-      console.warn("kayit olurken hata", res);
+    try {
+      const res = await Register(values);
+      if (res.status == 201) {
+        console.log(res);
+        router.push("/")
+        toast.success("Başarıyla Kayıt Olundu", {
+          description: `${values.user_name} ${values.user_surname}`,
+        });
+      } 
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.warn(error)
+        const errorMessage = error.response?.data        
+        if (errorMessage.includes("ERROR: duplicate key value violates")) {
+          toast.error("Bu bilgiler zaten kullanılıyor.");
+        } else {
+          console.error(`regıster try&catch hata -> ${errorMessage}`);
+          toast.error("Bir hata oluştu. Lütfen daha sonra tekrar deneyin.");
+        }
+      } else {
+        console.error(`regıster try&catch hata -> ${error}`);
+        toast.error("Bir hata oluştu. Lütfen daha sonra tekrar deneyin.");
+      }
     }
+   
   };
 
   useEffect(() => {

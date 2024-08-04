@@ -13,7 +13,7 @@ export const RegisterSchema = z.object({
     hospital_address: z.string().min(1),
     user_name: z.string().min(1),
     user_surname: z.string().min(1),
-    user_identity_number: z.string().min(1),
+    user_identity_number: z.string().min(11).max(11),
     user_email: z.string().email(),
     user_phone: z.string().min(1),
     user_password: z.string().min(1),

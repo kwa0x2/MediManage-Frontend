@@ -1,4 +1,5 @@
 "use client";
+import { loginAction } from "@/actions/login";
 import { Login } from "@/app/api/services/auth.Service";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +16,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as z from "zod";
 
 const LoginPage = () => {
@@ -29,13 +31,13 @@ const LoginPage = () => {
   const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
     console.log("Submitted values", values);
 
-    const res = await Login(values);
-    if (res.status == 200) {
-      console.log(res);
-
-    } else {
-      console.warn("kayit olurken hata", res);
-    }
+    try {
+        await loginAction(values);
+      } catch (error) {
+        console.log(error);
+        toast.error("Böyle bir hesap bulunamadı veya bilgiler yanlış.");
+        
+      }
   };
 
   return (

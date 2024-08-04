@@ -1,6 +1,7 @@
 import { User, UserRoleType } from "@/models/user";
 import axios from "../axios";
 import { Hospital } from "@/models/hospital";
+import { getMyCookie } from "@/hooks/get-my-cookie";
 
 export const Register = async (values: any) => {
 
@@ -32,8 +33,34 @@ export const Register = async (values: any) => {
 }
 
 export const Login = async (body: any) => {
-
     return await axios.post("/auth/login",body);
 }
 
+export const getLoggedInUserServer = async () => {
+    const query = await fetch(`${process.env.BASE_URL}/auth`, {
+      headers: {
+        Cookie: `${getMyCookie()}`,
+      },
+    });
 
+    const response = await query.json();
+    console.warn("asdas",response)
+    return response;
+  };
+
+
+// logout server side
+export const logoutServer = async () => {
+    const query = await fetch(`${process.env.BASE_URL}/auth/logout`, {
+      method: "POST",
+      headers: {
+        Cookie: `${getMyCookie()}`,
+      },
+    });
+    const response = {
+      status: query.status,
+      statusText: query.statusText,
+      headers: query.headers,
+    };
+    return response;
+  };
